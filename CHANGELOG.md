@@ -1,5 +1,11 @@
 # @stridetime/db
 
+## 0.1.2
+
+### Patch Changes
+
+- added individual repo structure for all major entities
+
 ## 0.2.0
 
 ### Breaking Changes
@@ -19,6 +25,7 @@
 ### Migration Guide
 
 **Before (ElectricSQL):**
+
 ```typescript
 import { initDatabase, getDatabase, rawQuery } from '@stridetime/db';
 
@@ -33,6 +40,7 @@ const tasks = await rawQuery('SELECT * FROM tasks WHERE user_id = ?', [userId]);
 ```
 
 **After (PowerSync):**
+
 ```typescript
 import { initDatabase, getDatabase } from '@stridetime/db';
 
@@ -60,6 +68,7 @@ const tasks = await db.tasks.findMany({
 ### Initial Release
 
 **Features:**
+
 - Local-first SQLite database with PowerSync integration
 - Optional cloud sync for Pro/Team tiers
 - Complete schema with workspaces, projects, tasks, time entries
@@ -67,6 +76,7 @@ const tasks = await db.tasks.findMany({
 - Sync status monitoring
 
 **Database Schema:**
+
 - Users with profile information
 - Roles with feature flags and limits
 - User subscriptions with Stripe integration
@@ -82,12 +92,14 @@ const tasks = await db.tasks.findMany({
 - User preferences for app settings
 
 **API:**
+
 - `initDatabase()` - Initialize database with optional sync
 - `getDatabase()` - Get database instance
 - `closeDatabase()` - Cleanup and disconnect
 - Prisma-like table clients for all entities
 
 **Development:**
+
 - Vite build configuration
 - TypeScript strict mode
 - ESLint + Prettier
