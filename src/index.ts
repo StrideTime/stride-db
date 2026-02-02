@@ -64,6 +64,14 @@ export {
   projectRepo,
   WorkspaceRepository,
   workspaceRepo,
+  TimeEntryRepository,
+  timeEntryRepo,
+  UserRepository,
+  userRepo,
+  TaskTypeRepository,
+  taskTypeRepo,
+  DailySummaryRepository,
+  dailySummaryRepo,
 } from './repositories';
 
 // ============================================================================

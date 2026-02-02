@@ -6,7 +6,7 @@
  */
 
 import { eq, and, isNull } from 'drizzle-orm';
-import type { Task } from '@stridetime/types';
+import type { Task, TaskStatus } from '@stridetime/types';
 import { tasks } from '../drizzle/schema';
 import type { TaskRow, NewTaskRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
@@ -159,6 +159,44 @@ export class TaskRepository {
       orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
     });
     return rows.map(toDomain);
+  }
+
+  /**
+   * Find tasks by status.
+   */
+  async findByStatus(db: StrideDatabase, userId: string, status: TaskStatus): Promise<Task[]> {
+    const rows = await db.query.tasks.findMany({
+      where: and(
+        eq(tasks.userId, userId),
+        eq(tasks.status, status),
+        eq(tasks.deleted, false)
+      ),
+      orderBy: (tasks, { desc }) => [desc(tasks.updatedAt)],
+    });
+    return rows.map(toDomain);
+  }
+
+  /**
+   * Find completed tasks for a user.
+   */
+  async findCompleted(db: StrideDatabase, userId: string): Promise<Task[]> {
+    const rows = await db.query.tasks.findMany({
+      where: and(
+        eq(tasks.userId, userId),
+        eq(tasks.status, 'COMPLETED'),
+        eq(tasks.deleted, false)
+      ),
+      orderBy: (tasks, { desc }) => [desc(tasks.completedAt)],
+    });
+    return rows.map(toDomain);
+  }
+
+  /**
+   * Find all subtasks of a parent task (alias for findSubtasks).
+   * Excludes deleted tasks.
+   */
+  async findByParentId(db: StrideDatabase, parentTaskId: string): Promise<Task[]> {
+    return this.findSubtasks(db, parentTaskId);
   }
 
   /**
