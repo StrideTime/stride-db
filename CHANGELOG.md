@@ -1,5 +1,11 @@
 # @stridetime/db
 
+## 0.1.4
+
+### Patch Changes
+
+- refactored to account for testing
+
 ## 0.1.2
 
 ### Patch Changes

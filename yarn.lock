@@ -983,8 +983,10 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.57.0.tgz#6f38851da1123ac0380121108abd31ff21205c3d"
   integrity sha512-Zv7v6q6aV+VslnpwzqKAmrk5JdVkLUzok2208ZXGipjb+msxBr/fJPZyeEXiFgH7k62Ak0SLIfxQRZQvTuf7rQ==
 
-"@stridetime/types@file:../stride-types":
-  version "0.1.0"
+"@stridetime/types@^0.1.2":
+  version "0.1.2"
+  resolved "https://npm.pkg.github.com/download/@stridetime/types/0.1.2/953fd6d7b6cf3716cbf3d4dbfb6338435cb42f90#953fd6d7b6cf3716cbf3d4dbfb6338435cb42f90"
+  integrity sha512-ag0YPp0wCh1tfwV8dvEcQdZSPYTgngt/vX4no3J3WMh6aRrH3DzxVUzX1dW//ws6PPgTA47HfwpVOajctXYm2Q==
 
 "@supabase/auth-js@2.93.2":
   version "2.93.2"
