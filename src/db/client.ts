@@ -11,8 +11,11 @@
  */
 
 import { PowerSyncDatabase } from '@powersync/web';
-import { DrizzleAppSchema, wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
-import type { PowerSyncSQLiteDatabase } from '@powersync/drizzle-driver';
+import {
+  DrizzleAppSchema,
+  wrapPowerSyncWithDrizzle,
+  type PowerSyncSQLiteDatabase,
+} from '@powersync/drizzle-driver';
 import type { AbstractPowerSyncDatabase } from '@powersync/common';
 import * as schema from '../drizzle/schema';
 import { SupabaseConnector } from './connector';
@@ -27,20 +30,20 @@ import { SupabaseConnector } from './connector';
  */
 const drizzleSchema = {
   // Tables
-  users: schema.users,
-  roles: schema.roles,
-  userSubscriptions: schema.userSubscriptions,
-  subscriptionHistory: schema.subscriptionHistory,
-  workspaces: schema.workspaces,
-  workspaceMembers: schema.workspaceMembers,
-  projects: schema.projects,
-  taskTypes: schema.taskTypes,
-  tasks: schema.tasks,
-  timeEntries: schema.timeEntries,
-  scheduledEvents: schema.scheduledEvents,
-  pointsLedger: schema.pointsLedger,
-  dailySummaries: schema.dailySummaries,
-  userPreferences: schema.userPreferences,
+  usersTable: schema.usersTable,
+  rolesTable: schema.rolesTable,
+  userSubscriptionsTable: schema.userSubscriptionsTable,
+  subscriptionHistoryTable: schema.subscriptionHistoryTable,
+  workspacesTable: schema.workspacesTable,
+  workspaceMembersTable: schema.workspaceMembersTable,
+  projectsTable: schema.projectsTable,
+  taskTypesTable: schema.taskTypesTable,
+  tasksTable: schema.tasksTable,
+  timeEntriesTable: schema.timeEntriesTable,
+  scheduledEventsTable: schema.scheduledEventsTable,
+  pointsLedgerTable: schema.pointsLedgerTable,
+  dailySummariesTable: schema.dailySummariesTable,
+  userPreferencesTable: schema.userPreferencesTable,
   // Relations
   usersRelations: schema.usersRelations,
   rolesRelations: schema.rolesRelations,
@@ -313,9 +316,7 @@ export function getSyncStatus(): SyncStatus {
  * unsubscribe();
  * ```
  */
-export function onSyncStatusChange(
-  listener: (status: SyncStatus) => void
-): () => void {
+export function onSyncStatusChange(listener: (status: SyncStatus) => void): () => void {
   syncStatusListeners.add(listener);
   return () => {
     syncStatusListeners.delete(listener);

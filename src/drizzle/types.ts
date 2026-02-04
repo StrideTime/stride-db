@@ -5,74 +5,74 @@
  */
 
 import {
-  users,
-  roles,
-  userSubscriptions,
-  subscriptionHistory,
-  workspaces,
-  workspaceMembers,
-  projects,
-  taskTypes,
-  tasks,
-  timeEntries,
-  scheduledEvents,
-  pointsLedger,
-  dailySummaries,
-  userPreferences,
+  usersTable,
+  rolesTable,
+  userSubscriptionsTable,
+  subscriptionHistoryTable,
+  workspacesTable,
+  workspaceMembersTable,
+  projectsTable,
+  taskTypesTable,
+  tasksTable,
+  timeEntriesTable,
+  scheduledEventsTable,
+  pointsLedgerTable,
+  dailySummariesTable,
+  userPreferencesTable,
 } from './schema';
 
 // User types
-export type UserRow = typeof users.$inferSelect;
-export type NewUserRow = typeof users.$inferInsert;
+export type UserRow = typeof usersTable.$inferSelect;
+export type NewUserRow = typeof usersTable.$inferInsert;
 
 // Role types
-export type RoleRow = typeof roles.$inferSelect;
-export type NewRoleRow = typeof roles.$inferInsert;
+export type RoleRow = typeof rolesTable.$inferSelect;
+export type NewRoleRow = typeof rolesTable.$inferInsert;
 
 // UserSubscription types
-export type UserSubscriptionRow = typeof userSubscriptions.$inferSelect;
-export type NewUserSubscriptionRow = typeof userSubscriptions.$inferInsert;
+export type UserSubscriptionRow = typeof userSubscriptionsTable.$inferSelect;
+export type NewUserSubscriptionRow = typeof userSubscriptionsTable.$inferInsert;
 
 // SubscriptionHistory types
-export type SubscriptionHistoryRow = typeof subscriptionHistory.$inferSelect;
-export type NewSubscriptionHistoryRow = typeof subscriptionHistory.$inferInsert;
+export type SubscriptionHistoryRow = typeof subscriptionHistoryTable.$inferSelect;
+export type NewSubscriptionHistoryRow = typeof subscriptionHistoryTable.$inferInsert;
 
 // Workspace types
-export type WorkspaceRow = typeof workspaces.$inferSelect;
-export type NewWorkspaceRow = typeof workspaces.$inferInsert;
+export type WorkspaceRow = typeof workspacesTable.$inferSelect;
+export type NewWorkspaceRow = typeof workspacesTable.$inferInsert;
 
 // WorkspaceMember types
-export type WorkspaceMemberRow = typeof workspaceMembers.$inferSelect;
-export type NewWorkspaceMemberRow = typeof workspaceMembers.$inferInsert;
+export type WorkspaceMemberRow = typeof workspaceMembersTable.$inferSelect;
+export type NewWorkspaceMemberRow = typeof workspaceMembersTable.$inferInsert;
 
 // Project types
-export type ProjectRow = typeof projects.$inferSelect;
-export type NewProjectRow = typeof projects.$inferInsert;
+export type ProjectRow = typeof projectsTable.$inferSelect;
+export type NewProjectRow = typeof projectsTable.$inferInsert;
 
 // TaskType types
-export type TaskTypeRow = typeof taskTypes.$inferSelect;
-export type NewTaskTypeRow = typeof taskTypes.$inferInsert;
+export type TaskTypeRow = typeof taskTypesTable.$inferSelect;
+export type NewTaskTypeRow = typeof taskTypesTable.$inferInsert;
 
 // Task types
-export type TaskRow = typeof tasks.$inferSelect;
-export type NewTaskRow = typeof tasks.$inferInsert;
+export type TaskRow = typeof tasksTable.$inferSelect;
+export type NewTaskRow = typeof tasksTable.$inferInsert;
 
 // TimeEntry types
-export type TimeEntryRow = typeof timeEntries.$inferSelect;
-export type NewTimeEntryRow = typeof timeEntries.$inferInsert;
+export type TimeEntryRow = typeof timeEntriesTable.$inferSelect;
+export type NewTimeEntryRow = typeof timeEntriesTable.$inferInsert;
 
 // ScheduledEvent types
-export type ScheduledEventRow = typeof scheduledEvents.$inferSelect;
-export type NewScheduledEventRow = typeof scheduledEvents.$inferInsert;
+export type ScheduledEventRow = typeof scheduledEventsTable.$inferSelect;
+export type NewScheduledEventRow = typeof scheduledEventsTable.$inferInsert;
 
 // PointsLedger types
-export type PointsLedgerRow = typeof pointsLedger.$inferSelect;
-export type NewPointsLedgerRow = typeof pointsLedger.$inferInsert;
+export type PointsLedgerRow = typeof pointsLedgerTable.$inferSelect;
+export type NewPointsLedgerRow = typeof pointsLedgerTable.$inferInsert;
 
 // DailySummary types
-export type DailySummaryRow = typeof dailySummaries.$inferSelect;
-export type NewDailySummaryRow = typeof dailySummaries.$inferInsert;
+export type DailySummaryRow = typeof dailySummariesTable.$inferSelect;
+export type NewDailySummaryRow = typeof dailySummariesTable.$inferInsert;
 
 // UserPreferences types
-export type UserPreferencesRow = typeof userPreferences.$inferSelect;
-export type NewUserPreferencesRow = typeof userPreferences.$inferInsert;
+export type UserPreferencesRow = typeof userPreferencesTable.$inferSelect;
+export type NewUserPreferencesRow = typeof userPreferencesTable.$inferInsert;

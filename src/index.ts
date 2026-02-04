@@ -26,32 +26,36 @@
 // ============================================================================
 
 export {
-  // Initialization
   initDatabase,
   getDatabase,
-  isDatabaseInitialized,
   closeDatabase,
-
-  // Sync management
+  isDatabaseInitialized,
+  getPowerSyncDatabase,
+  getConnector,
   connectSync,
   disconnectSync,
   isSyncEnabled,
   getSyncStatus,
   onSyncStatusChange,
-
-  // Types
   type StrideDatabase,
   type DatabaseConfig,
   type LocalDatabaseConfig,
   type SyncDatabaseConfig,
   type SyncStatus,
   type SyncState,
-
-  // Connector (for auth)
-  SupabaseConnector,
-  getPowerSyncDatabase,
-  getConnector,
 } from './db';
+
+// ============================================================================
+// CONNECTOR
+// ============================================================================
+
+export { SupabaseConnector } from './db/connector';
+
+// ============================================================================
+// AUTH PROVIDER
+// ============================================================================
+
+export { SupabaseAuthProvider } from './auth/SupabaseAuthProvider';
 
 // ============================================================================
 // REPOSITORIES

@@ -8,10 +8,16 @@ import Database from 'better-sqlite3';
 import * as schema from '../drizzle/schema';
 
 /**
+ * Test database type that's compatible with both PowerSync and BetterSQLite3
+ * This allows us to test with BetterSQLite3 while using the same interface
+ */
+export type TestDatabase = ReturnType<typeof drizzle<typeof schema>>;
+
+/**
  * Create an in-memory test database.
  * This creates a fresh SQLite database for each test.
  */
-export function createTestDb(): any {
+export function createTestDb(): TestDatabase {
   const sqlite = new Database(':memory:');
   const db = drizzle(sqlite, { schema });
 

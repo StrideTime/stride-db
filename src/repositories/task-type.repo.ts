@@ -7,7 +7,7 @@
 
 import { eq, and, or, isNull, asc } from 'drizzle-orm';
 import type { TaskType } from '@stridetime/types';
-import { taskTypes } from '../drizzle/schema';
+import { taskTypesTable } from '../drizzle/schema';
 import type { TaskTypeRow, NewTaskTypeRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -65,8 +65,8 @@ export class TaskTypeRepository {
    * Find a task type by ID.
    */
   async findById(db: StrideDatabase, id: string): Promise<TaskType | null> {
-    const row = await db.query.taskTypes.findFirst({
-      where: eq(taskTypes.id, id),
+    const row = await db.query.taskTypesTable.findFirst({
+      where: eq(taskTypesTable.id, id),
     });
     return row ? toDomain(row) : null;
   }
@@ -77,14 +77,14 @@ export class TaskTypeRepository {
   async findByUser(db: StrideDatabase, userId: string, workspaceId?: string): Promise<TaskType[]> {
     const conditions = workspaceId
       ? or(
-          and(eq(taskTypes.userId, userId), isNull(taskTypes.workspaceId)),
-          eq(taskTypes.workspaceId, workspaceId)
+          and(eq(taskTypesTable.userId, userId), isNull(taskTypesTable.workspaceId)),
+          eq(taskTypesTable.workspaceId, workspaceId)
         )
-      : and(eq(taskTypes.userId, userId), isNull(taskTypes.workspaceId));
+      : and(eq(taskTypesTable.userId, userId), isNull(taskTypesTable.workspaceId));
 
-    const rows = await db.query.taskTypes.findMany({
+    const rows = await db.query.taskTypesTable.findMany({
       where: conditions,
-      orderBy: [asc(taskTypes.displayOrder), asc(taskTypes.name)],
+      orderBy: [asc(taskTypesTable.displayOrder), asc(taskTypesTable.name)],
     });
     return rows.map(toDomain);
   }
@@ -93,9 +93,9 @@ export class TaskTypeRepository {
    * Find all task types for a workspace.
    */
   async findByWorkspace(db: StrideDatabase, workspaceId: string): Promise<TaskType[]> {
-    const rows = await db.query.taskTypes.findMany({
-      where: eq(taskTypes.workspaceId, workspaceId),
-      orderBy: [asc(taskTypes.displayOrder), asc(taskTypes.name)],
+    const rows = await db.query.taskTypesTable.findMany({
+      where: eq(taskTypesTable.workspaceId, workspaceId),
+      orderBy: [asc(taskTypesTable.displayOrder), asc(taskTypesTable.name)],
     });
     return rows.map(toDomain);
   }
@@ -104,8 +104,8 @@ export class TaskTypeRepository {
    * Find default task type for a user.
    */
   async findDefault(db: StrideDatabase, userId: string): Promise<TaskType | null> {
-    const row = await db.query.taskTypes.findFirst({
-      where: and(eq(taskTypes.userId, userId), eq(taskTypes.isDefault, true)),
+    const row = await db.query.taskTypesTable.findFirst({
+      where: and(eq(taskTypesTable.userId, userId), eq(taskTypesTable.isDefault, true)),
     });
     return row ? toDomain(row) : null;
   }
@@ -117,7 +117,7 @@ export class TaskTypeRepository {
     const id = generateId();
     const dbTaskType = toDbInsert(taskType);
 
-    await db.insert(taskTypes).values({
+    await db.insert(taskTypesTable).values({
       id,
       ...dbTaskType,
     });
@@ -136,9 +136,9 @@ export class TaskTypeRepository {
     const dbUpdates = toDbUpdate(updates);
 
     await db
-      .update(taskTypes)
+      .update(taskTypesTable)
       .set(dbUpdates)
-      .where(eq(taskTypes.id, id));
+      .where(eq(taskTypesTable.id, id));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -151,7 +151,7 @@ export class TaskTypeRepository {
    * Delete a task type.
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
-    await db.delete(taskTypes).where(eq(taskTypes.id, id));
+    await db.delete(taskTypesTable).where(eq(taskTypesTable.id, id));
   }
 
   /**
@@ -160,9 +160,9 @@ export class TaskTypeRepository {
   async reorder(db: StrideDatabase, taskTypeIds: string[]): Promise<void> {
     for (let i = 0; i < taskTypeIds.length; i++) {
       await db
-        .update(taskTypes)
+        .update(taskTypesTable)
         .set({ displayOrder: i })
-        .where(eq(taskTypes.id, taskTypeIds[i]));
+        .where(eq(taskTypesTable.id, taskTypeIds[i]));
     }
   }
 
@@ -172,15 +172,15 @@ export class TaskTypeRepository {
   async setDefault(db: StrideDatabase, userId: string, taskTypeId: string): Promise<void> {
     // Unset all defaults for user
     await db
-      .update(taskTypes)
+      .update(taskTypesTable)
       .set({ isDefault: false })
-      .where(eq(taskTypes.userId, userId));
+      .where(eq(taskTypesTable.userId, userId));
 
     // Set the new default
     await db
-      .update(taskTypes)
+      .update(taskTypesTable)
       .set({ isDefault: true })
-      .where(eq(taskTypes.id, taskTypeId));
+      .where(eq(taskTypesTable.id, taskTypeId));
   }
 }
 

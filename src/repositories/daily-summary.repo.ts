@@ -7,7 +7,7 @@
 
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import type { DailySummary } from '@stridetime/types';
-import { dailySummaries } from '../drizzle/schema';
+import { dailySummariesTable } from '../drizzle/schema';
 import type { DailySummaryRow, NewDailySummaryRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -67,8 +67,8 @@ export class DailySummaryRepository {
    * Find a daily summary by ID.
    */
   async findById(db: StrideDatabase, id: string): Promise<DailySummary | null> {
-    const row = await db.query.dailySummaries.findFirst({
-      where: eq(dailySummaries.id, id),
+    const row = await db.query.dailySummariesTable.findFirst({
+      where: eq(dailySummariesTable.id, id),
     });
     return row ? toDomain(row) : null;
   }
@@ -77,8 +77,8 @@ export class DailySummaryRepository {
    * Find daily summary for a user on a specific date.
    */
   async findByDate(db: StrideDatabase, userId: string, date: string): Promise<DailySummary | null> {
-    const row = await db.query.dailySummaries.findFirst({
-      where: and(eq(dailySummaries.userId, userId), eq(dailySummaries.date, date)),
+    const row = await db.query.dailySummariesTable.findFirst({
+      where: and(eq(dailySummariesTable.userId, userId), eq(dailySummariesTable.date, date)),
     });
     return row ? toDomain(row) : null;
   }
@@ -87,9 +87,9 @@ export class DailySummaryRepository {
    * Find all summaries for a user.
    */
   async findByUserId(db: StrideDatabase, userId: string): Promise<DailySummary[]> {
-    const rows = await db.query.dailySummaries.findMany({
-      where: eq(dailySummaries.userId, userId),
-      orderBy: [desc(dailySummaries.date)],
+    const rows = await db.query.dailySummariesTable.findMany({
+      where: eq(dailySummariesTable.userId, userId),
+      orderBy: [desc(dailySummariesTable.date)],
     });
     return rows.map(toDomain);
   }
@@ -103,13 +103,13 @@ export class DailySummaryRepository {
     startDate: string,
     endDate: string
   ): Promise<DailySummary[]> {
-    const rows = await db.query.dailySummaries.findMany({
+    const rows = await db.query.dailySummariesTable.findMany({
       where: and(
-        eq(dailySummaries.userId, userId),
-        gte(dailySummaries.date, startDate),
-        lte(dailySummaries.date, endDate)
+        eq(dailySummariesTable.userId, userId),
+        gte(dailySummariesTable.date, startDate),
+        lte(dailySummariesTable.date, endDate)
       ),
-      orderBy: [desc(dailySummaries.date)],
+      orderBy: [desc(dailySummariesTable.date)],
     });
     return rows.map(toDomain);
   }
@@ -118,9 +118,9 @@ export class DailySummaryRepository {
    * Find recent summaries (last N days).
    */
   async findRecent(db: StrideDatabase, userId: string, days: number): Promise<DailySummary[]> {
-    const rows = await db.query.dailySummaries.findMany({
-      where: eq(dailySummaries.userId, userId),
-      orderBy: [desc(dailySummaries.date)],
+    const rows = await db.query.dailySummariesTable.findMany({
+      where: eq(dailySummariesTable.userId, userId),
+      orderBy: [desc(dailySummariesTable.date)],
       limit: days,
     });
     return rows.map(toDomain);
@@ -133,7 +133,7 @@ export class DailySummaryRepository {
     const id = generateId();
     const dbSummary = toDbInsert(summary);
 
-    await db.insert(dailySummaries).values({
+    await db.insert(dailySummariesTable).values({
       id,
       ...dbSummary,
     });
@@ -152,9 +152,9 @@ export class DailySummaryRepository {
     const dbUpdates = toDbUpdate(updates);
 
     await db
-      .update(dailySummaries)
+      .update(dailySummariesTable)
       .set(dbUpdates)
-      .where(eq(dailySummaries.id, id));
+      .where(eq(dailySummariesTable.id, id));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -180,7 +180,7 @@ export class DailySummaryRepository {
    * Delete a daily summary.
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
-    await db.delete(dailySummaries).where(eq(dailySummaries.id, id));
+    await db.delete(dailySummariesTable).where(eq(dailySummariesTable.id, id));
   }
 
   /**

@@ -30,7 +30,7 @@ import type {
 // USERS TABLE
 // ============================================================================
 
-export const users = sqliteTable(
+export const usersTable = sqliteTable(
   'users',
   {
     id: text('id').primaryKey(),
@@ -43,35 +43,35 @@ export const users = sqliteTable(
     updatedAt: text('updated_at').notNull(),
     deleted: integer('deleted', { mode: 'boolean' }).notNull().default(false),
   },
-  (table) => [index('idx_users_email').on(table.email)]
+  table => [index('idx_users_email').on(table.email)]
 );
 
-export const usersRelations = relations(users, ({ one, many }) => ({
-  subscription: one(userSubscriptions, {
-    fields: [users.id],
-    references: [userSubscriptions.userId],
+export const usersRelations = relations(usersTable, ({ one, many }) => ({
+  subscription: one(userSubscriptionsTable, {
+    fields: [usersTable.id],
+    references: [userSubscriptionsTable.userId],
   }),
-  subscriptionHistory: many(subscriptionHistory),
-  ownedWorkspaces: many(workspaces),
-  workspaceMemberships: many(workspaceMembers),
-  projects: many(projects),
-  tasks: many(tasks),
-  taskTypes: many(taskTypes),
-  timeEntries: many(timeEntries),
-  scheduledEvents: many(scheduledEvents),
-  dailySummaries: many(dailySummaries),
-  preferences: one(userPreferences, {
-    fields: [users.id],
-    references: [userPreferences.userId],
+  subscriptionHistory: many(subscriptionHistoryTable),
+  ownedWorkspaces: many(workspacesTable),
+  workspaceMemberships: many(workspaceMembersTable),
+  projects: many(projectsTable),
+  tasks: many(tasksTable),
+  taskTypes: many(taskTypesTable),
+  timeEntries: many(timeEntriesTable),
+  scheduledEvents: many(scheduledEventsTable),
+  dailySummaries: many(dailySummariesTable),
+  preferences: one(userPreferencesTable, {
+    fields: [usersTable.id],
+    references: [userPreferencesTable.userId],
   }),
-  pointsLedger: many(pointsLedger),
+  pointsLedger: many(pointsLedgerTable),
 }));
 
 // ============================================================================
 // ROLES TABLE
 // ============================================================================
 
-export const roles = sqliteTable('roles', {
+export const rolesTable = sqliteTable('roles', {
   id: text('id').primaryKey(),
   displayName: text('display_name').notNull(),
   description: text('description'),
@@ -100,15 +100,15 @@ export const roles = sqliteTable('roles', {
   updatedAt: text('updated_at').notNull(),
 });
 
-export const rolesRelations = relations(roles, ({ many }) => ({
-  subscriptions: many(userSubscriptions),
+export const rolesRelations = relations(rolesTable, ({ many }) => ({
+  subscriptions: many(userSubscriptionsTable),
 }));
 
 // ============================================================================
 // USER SUBSCRIPTIONS TABLE
 // ============================================================================
 
-export const userSubscriptions = sqliteTable(
+export const userSubscriptionsTable = sqliteTable(
   'user_subscriptions',
   {
     id: text('id').primaryKey(),
@@ -142,21 +142,21 @@ export const userSubscriptions = sqliteTable(
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
-  (table) => [
+  table => [
     index('idx_user_subscriptions_user_id').on(table.userId),
     index('idx_user_subscriptions_role_id').on(table.roleId),
     index('idx_user_subscriptions_status').on(table.status),
   ]
 );
 
-export const userSubscriptionsRelations = relations(userSubscriptions, ({ one }) => ({
-  user: one(users, {
-    fields: [userSubscriptions.userId],
-    references: [users.id],
+export const userSubscriptionsRelations = relations(userSubscriptionsTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [userSubscriptionsTable.userId],
+    references: [usersTable.id],
   }),
-  role: one(roles, {
-    fields: [userSubscriptions.roleId],
-    references: [roles.id],
+  role: one(rolesTable, {
+    fields: [userSubscriptionsTable.roleId],
+    references: [rolesTable.id],
   }),
 }));
 
@@ -164,7 +164,7 @@ export const userSubscriptionsRelations = relations(userSubscriptions, ({ one })
 // SUBSCRIPTION HISTORY TABLE
 // ============================================================================
 
-export const subscriptionHistory = sqliteTable(
+export const subscriptionHistoryTable = sqliteTable(
   'subscription_history',
   {
     id: text('id').primaryKey(),
@@ -176,13 +176,13 @@ export const subscriptionHistory = sqliteTable(
     reason: text('reason').notNull().$type<SubscriptionChangeReason>(),
     changedAt: text('changed_at').notNull(),
   },
-  (table) => [index('idx_subscription_history_user_id').on(table.userId)]
+  table => [index('idx_subscription_history_user_id').on(table.userId)]
 );
 
-export const subscriptionHistoryRelations = relations(subscriptionHistory, ({ one }) => ({
-  user: one(users, {
-    fields: [subscriptionHistory.userId],
-    references: [users.id],
+export const subscriptionHistoryRelations = relations(subscriptionHistoryTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [subscriptionHistoryTable.userId],
+    references: [usersTable.id],
   }),
 }));
 
@@ -190,7 +190,7 @@ export const subscriptionHistoryRelations = relations(subscriptionHistory, ({ on
 // WORKSPACES TABLE
 // ============================================================================
 
-export const workspaces = sqliteTable(
+export const workspacesTable = sqliteTable(
   'workspaces',
   {
     id: text('id').primaryKey(),
@@ -201,23 +201,23 @@ export const workspaces = sqliteTable(
     updatedAt: text('updated_at').notNull(),
     deleted: integer('deleted', { mode: 'boolean' }).notNull().default(false),
   },
-  (table) => [index('idx_workspaces_owner_user_id').on(table.ownerUserId)]
+  table => [index('idx_workspaces_owner_user_id').on(table.ownerUserId)]
 );
 
-export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
-  owner: one(users, {
-    fields: [workspaces.ownerUserId],
-    references: [users.id],
+export const workspacesRelations = relations(workspacesTable, ({ one, many }) => ({
+  owner: one(usersTable, {
+    fields: [workspacesTable.ownerUserId],
+    references: [usersTable.id],
   }),
-  members: many(workspaceMembers),
-  projects: many(projects),
+  members: many(workspaceMembersTable),
+  projects: many(projectsTable),
 }));
 
 // ============================================================================
 // WORKSPACE MEMBERS TABLE
 // ============================================================================
 
-export const workspaceMembers = sqliteTable(
+export const workspaceMembersTable = sqliteTable(
   'workspace_members',
   {
     id: text('id').primaryKey(),
@@ -227,20 +227,20 @@ export const workspaceMembers = sqliteTable(
     invitedBy: text('invited_by'),
     joinedAt: text('joined_at').notNull(),
   },
-  (table) => [
+  table => [
     uniqueIndex('idx_workspace_members_workspace_user').on(table.workspaceId, table.userId),
     index('idx_workspace_members_user_id').on(table.userId),
   ]
 );
 
-export const workspaceMembersRelations = relations(workspaceMembers, ({ one }) => ({
-  workspace: one(workspaces, {
-    fields: [workspaceMembers.workspaceId],
-    references: [workspaces.id],
+export const workspaceMembersRelations = relations(workspaceMembersTable, ({ one }) => ({
+  workspace: one(workspacesTable, {
+    fields: [workspaceMembersTable.workspaceId],
+    references: [workspacesTable.id],
   }),
-  user: one(users, {
-    fields: [workspaceMembers.userId],
-    references: [users.id],
+  user: one(usersTable, {
+    fields: [workspaceMembersTable.userId],
+    references: [usersTable.id],
   }),
 }));
 
@@ -248,7 +248,7 @@ export const workspaceMembersRelations = relations(workspaceMembers, ({ one }) =
 // PROJECTS TABLE
 // ============================================================================
 
-export const projects = sqliteTable(
+export const projectsTable = sqliteTable(
   'projects',
   {
     id: text('id').primaryKey(),
@@ -262,30 +262,30 @@ export const projects = sqliteTable(
     updatedAt: text('updated_at').notNull(),
     deleted: integer('deleted', { mode: 'boolean' }).notNull().default(false),
   },
-  (table) => [
+  table => [
     index('idx_projects_workspace_id').on(table.workspaceId),
     index('idx_projects_user_id').on(table.userId),
     index('idx_projects_deleted').on(table.deleted),
   ]
 );
 
-export const projectsRelations = relations(projects, ({ one, many }) => ({
-  workspace: one(workspaces, {
-    fields: [projects.workspaceId],
-    references: [workspaces.id],
+export const projectsRelations = relations(projectsTable, ({ one, many }) => ({
+  workspace: one(workspacesTable, {
+    fields: [projectsTable.workspaceId],
+    references: [workspacesTable.id],
   }),
-  user: one(users, {
-    fields: [projects.userId],
-    references: [users.id],
+  user: one(usersTable, {
+    fields: [projectsTable.userId],
+    references: [usersTable.id],
   }),
-  tasks: many(tasks),
+  tasks: many(tasksTable),
 }));
 
 // ============================================================================
 // TASK TYPES TABLE
 // ============================================================================
 
-export const taskTypes = sqliteTable(
+export const taskTypesTable = sqliteTable(
   'task_types',
   {
     id: text('id').primaryKey(),
@@ -298,25 +298,25 @@ export const taskTypes = sqliteTable(
     displayOrder: integer('display_order').notNull().default(0),
     createdAt: text('created_at').notNull(),
   },
-  (table) => [
+  table => [
     index('idx_task_types_user_id').on(table.userId),
     index('idx_task_types_workspace_id').on(table.workspaceId),
   ]
 );
 
-export const taskTypesRelations = relations(taskTypes, ({ one, many }) => ({
-  user: one(users, {
-    fields: [taskTypes.userId],
-    references: [users.id],
+export const taskTypesRelations = relations(taskTypesTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [taskTypesTable.userId],
+    references: [usersTable.id],
   }),
-  tasks: many(tasks),
+  tasks: many(tasksTable),
 }));
 
 // ============================================================================
 // TASKS TABLE
 // ============================================================================
 
-export const tasks = sqliteTable(
+export const tasksTable = sqliteTable(
   'tasks',
   {
     id: text('id').primaryKey(),
@@ -346,7 +346,7 @@ export const tasks = sqliteTable(
     completedAt: text('completed_at'),
     deleted: integer('deleted', { mode: 'boolean' }).notNull().default(false),
   },
-  (table) => [
+  table => [
     index('idx_tasks_user_id').on(table.userId),
     index('idx_tasks_project_id').on(table.projectId),
     index('idx_tasks_parent_task_id').on(table.parentTaskId),
@@ -356,37 +356,37 @@ export const tasks = sqliteTable(
   ]
 );
 
-export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  user: one(users, {
-    fields: [tasks.userId],
-    references: [users.id],
+export const tasksRelations = relations(tasksTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [tasksTable.userId],
+    references: [usersTable.id],
   }),
-  project: one(projects, {
-    fields: [tasks.projectId],
-    references: [projects.id],
+  project: one(projectsTable, {
+    fields: [tasksTable.projectId],
+    references: [projectsTable.id],
   }),
-  taskType: one(taskTypes, {
-    fields: [tasks.taskTypeId],
-    references: [taskTypes.id],
+  taskType: one(taskTypesTable, {
+    fields: [tasksTable.taskTypeId],
+    references: [taskTypesTable.id],
   }),
-  parentTask: one(tasks, {
-    fields: [tasks.parentTaskId],
-    references: [tasks.id],
+  parentTask: one(tasksTable, {
+    fields: [tasksTable.parentTaskId],
+    references: [tasksTable.id],
     relationName: 'subTasks',
   }),
-  subTasks: many(tasks, {
+  subTasks: many(tasksTable, {
     relationName: 'subTasks',
   }),
-  timeEntries: many(timeEntries),
-  scheduledEvents: many(scheduledEvents),
-  pointsLedger: many(pointsLedger),
+  timeEntries: many(timeEntriesTable),
+  scheduledEvents: many(scheduledEventsTable),
+  pointsLedger: many(pointsLedgerTable),
 }));
 
 // ============================================================================
 // TIME ENTRIES TABLE
 // ============================================================================
 
-export const timeEntries = sqliteTable(
+export const timeEntriesTable = sqliteTable(
   'time_entries',
   {
     id: text('id').primaryKey(),
@@ -396,30 +396,30 @@ export const timeEntries = sqliteTable(
     endedAt: text('ended_at'),
     createdAt: text('created_at').notNull(),
   },
-  (table) => [
+  table => [
     index('idx_time_entries_task_id').on(table.taskId),
     index('idx_time_entries_user_id').on(table.userId),
     index('idx_time_entries_started_at').on(table.startedAt),
   ]
 );
 
-export const timeEntriesRelations = relations(timeEntries, ({ one, many }) => ({
-  task: one(tasks, {
-    fields: [timeEntries.taskId],
-    references: [tasks.id],
+export const timeEntriesRelations = relations(timeEntriesTable, ({ one, many }) => ({
+  task: one(tasksTable, {
+    fields: [timeEntriesTable.taskId],
+    references: [tasksTable.id],
   }),
-  user: one(users, {
-    fields: [timeEntries.userId],
-    references: [users.id],
+  user: one(usersTable, {
+    fields: [timeEntriesTable.userId],
+    references: [usersTable.id],
   }),
-  pointsLedger: many(pointsLedger),
+  pointsLedger: many(pointsLedgerTable),
 }));
 
 // ============================================================================
 // SCHEDULED EVENTS TABLE
 // ============================================================================
 
-export const scheduledEvents = sqliteTable(
+export const scheduledEventsTable = sqliteTable(
   'scheduled_events',
   {
     id: text('id').primaryKey(),
@@ -433,21 +433,21 @@ export const scheduledEvents = sqliteTable(
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
-  (table) => [
+  table => [
     index('idx_scheduled_events_user_id').on(table.userId),
     index('idx_scheduled_events_start_time').on(table.startTime),
     index('idx_scheduled_events_external_id').on(table.externalId),
   ]
 );
 
-export const scheduledEventsRelations = relations(scheduledEvents, ({ one }) => ({
-  task: one(tasks, {
-    fields: [scheduledEvents.taskId],
-    references: [tasks.id],
+export const scheduledEventsRelations = relations(scheduledEventsTable, ({ one }) => ({
+  task: one(tasksTable, {
+    fields: [scheduledEventsTable.taskId],
+    references: [tasksTable.id],
   }),
-  user: one(users, {
-    fields: [scheduledEvents.userId],
-    references: [users.id],
+  user: one(usersTable, {
+    fields: [scheduledEventsTable.userId],
+    references: [usersTable.id],
   }),
 }));
 
@@ -455,7 +455,7 @@ export const scheduledEventsRelations = relations(scheduledEvents, ({ one }) => 
 // POINTS LEDGER TABLE
 // ============================================================================
 
-export const pointsLedger = sqliteTable(
+export const pointsLedgerTable = sqliteTable(
   'points_ledger',
   {
     id: text('id').primaryKey(),
@@ -467,25 +467,25 @@ export const pointsLedger = sqliteTable(
     description: text('description'),
     createdAt: text('created_at').notNull(),
   },
-  (table) => [
+  table => [
     index('idx_points_ledger_user_id').on(table.userId),
     index('idx_points_ledger_user_created').on(table.userId, table.createdAt),
     index('idx_points_ledger_task_id').on(table.taskId),
   ]
 );
 
-export const pointsLedgerRelations = relations(pointsLedger, ({ one }) => ({
-  user: one(users, {
-    fields: [pointsLedger.userId],
-    references: [users.id],
+export const pointsLedgerRelations = relations(pointsLedgerTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [pointsLedgerTable.userId],
+    references: [usersTable.id],
   }),
-  task: one(tasks, {
-    fields: [pointsLedger.taskId],
-    references: [tasks.id],
+  task: one(tasksTable, {
+    fields: [pointsLedgerTable.taskId],
+    references: [tasksTable.id],
   }),
-  timeEntry: one(timeEntries, {
-    fields: [pointsLedger.timeEntryId],
-    references: [timeEntries.id],
+  timeEntry: one(timeEntriesTable, {
+    fields: [pointsLedgerTable.timeEntryId],
+    references: [timeEntriesTable.id],
   }),
 }));
 
@@ -493,7 +493,7 @@ export const pointsLedgerRelations = relations(pointsLedger, ({ one }) => ({
 // DAILY SUMMARIES TABLE
 // ============================================================================
 
-export const dailySummaries = sqliteTable(
+export const dailySummariesTable = sqliteTable(
   'daily_summaries',
   {
     id: text('id').primaryKey(),
@@ -507,16 +507,16 @@ export const dailySummaries = sqliteTable(
     standoutMoment: text('standout_moment'),
     createdAt: text('created_at').notNull(),
   },
-  (table) => [
+  table => [
     uniqueIndex('idx_daily_summaries_user_date').on(table.userId, table.date),
     index('idx_daily_summaries_user_id_date').on(table.userId, table.date),
   ]
 );
 
-export const dailySummariesRelations = relations(dailySummaries, ({ one }) => ({
-  user: one(users, {
-    fields: [dailySummaries.userId],
-    references: [users.id],
+export const dailySummariesRelations = relations(dailySummariesTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [dailySummariesTable.userId],
+    references: [usersTable.id],
   }),
 }));
 
@@ -524,7 +524,7 @@ export const dailySummariesRelations = relations(dailySummaries, ({ one }) => ({
 // USER PREFERENCES TABLE
 // ============================================================================
 
-export const userPreferences = sqliteTable('user_preferences', {
+export const userPreferencesTable = sqliteTable('user_preferences', {
   userId: text('user_id').primaryKey(),
 
   theme: text('theme').notNull().default('SYSTEM').$type<Theme>(),
@@ -541,16 +541,18 @@ export const userPreferences = sqliteTable('user_preferences', {
   autoPauseMinutes: integer('auto_pause_minutes').notNull().default(10),
   autoPauseEnabled: integer('auto_pause_enabled', { mode: 'boolean' }).notNull().default(true),
 
-  breakReminderEnabled: integer('break_reminder_enabled', { mode: 'boolean' }).notNull().default(true),
+  breakReminderEnabled: integer('break_reminder_enabled', { mode: 'boolean' })
+    .notNull()
+    .default(true),
   breakReminderMinutes: integer('break_reminder_minutes').notNull().default(90),
 
   updatedAt: text('updated_at').notNull(),
 });
 
-export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
-  user: one(users, {
-    fields: [userPreferences.userId],
-    references: [users.id],
+export const userPreferencesRelations = relations(userPreferencesTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [userPreferencesTable.userId],
+    references: [usersTable.id],
   }),
 }));
 

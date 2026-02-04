@@ -7,7 +7,7 @@
 
 import { eq, and } from 'drizzle-orm';
 import type { User } from '@stridetime/types';
-import { users } from '../drizzle/schema';
+import { usersTable } from '../drizzle/schema';
 import type { UserRow, NewUserRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -68,8 +68,8 @@ export class UserRepository {
    * Returns null if not found or deleted.
    */
   async findById(db: StrideDatabase, id: string): Promise<User | null> {
-    const row = await db.query.users.findFirst({
-      where: and(eq(users.id, id), eq(users.deleted, false)),
+    const row = await db.query.usersTable.findFirst({
+      where: and(eq(usersTable.id, id), eq(usersTable.deleted, false)),
     });
     return row ? toDomain(row) : null;
   }
@@ -79,8 +79,8 @@ export class UserRepository {
    * Returns null if not found or deleted.
    */
   async findByEmail(db: StrideDatabase, email: string): Promise<User | null> {
-    const row = await db.query.users.findFirst({
-      where: and(eq(users.email, email), eq(users.deleted, false)),
+    const row = await db.query.usersTable.findFirst({
+      where: and(eq(usersTable.email, email), eq(usersTable.deleted, false)),
     });
     return row ? toDomain(row) : null;
   }
@@ -93,7 +93,7 @@ export class UserRepository {
     const id = generateId();
     const dbUser = toDbInsert(user);
 
-    await db.insert(users).values({
+    await db.insert(usersTable).values({
       id,
       ...dbUser,
     });
@@ -113,9 +113,9 @@ export class UserRepository {
     const dbUpdates = toDbUpdate(updates);
 
     await db
-      .update(users)
+      .update(usersTable)
       .set(dbUpdates)
-      .where(and(eq(users.id, id), eq(users.deleted, false)));
+      .where(and(eq(usersTable.id, id), eq(usersTable.deleted, false)));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -130,9 +130,9 @@ export class UserRepository {
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
     await db
-      .update(users)
+      .update(usersTable)
       .set({ deleted: true, updatedAt: now() })
-      .where(eq(users.id, id));
+      .where(eq(usersTable.id, id));
   }
 
   /**

@@ -7,7 +7,7 @@
 
 import { eq, and, isNull } from 'drizzle-orm';
 import type { Task, TaskStatus } from '@stridetime/types';
-import { tasks } from '../drizzle/schema';
+import { tasksTable } from '../drizzle/schema';
 import type { TaskRow, NewTaskRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -89,44 +89,44 @@ export class TaskRepository {
    * Returns null if not found or deleted.
    */
   async findById(db: StrideDatabase, id: string): Promise<Task | null> {
-    const row = await db.query.tasks.findFirst({
-      where: and(eq(tasks.id, id), eq(tasks.deleted, false)),
+    const row = await db.query.tasksTable.findFirst({
+      where: and(eq(tasksTable.id, id), eq(tasksTable.deleted, false)),
     });
     return row ? toDomain(row) : null;
   }
 
   /**
    * Find all tasks for a user.
-   * Excludes deleted tasks.
+   * Excludes deleted tasksTable.
    */
   async findByUserId(db: StrideDatabase, userId: string): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
-      where: and(eq(tasks.userId, userId), eq(tasks.deleted, false)),
-      orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
+    const rows = await db.query.tasksTable.findMany({
+      where: and(eq(tasksTable.userId, userId), eq(tasksTable.deleted, false)),
+      orderBy: (_tasks, { desc }) => [desc(tasksTable.createdAt)],
     });
     return rows.map(toDomain);
   }
 
   /**
    * Find all tasks for a project.
-   * Excludes deleted tasks.
+   * Excludes deleted tasksTable.
    */
   async findByProjectId(db: StrideDatabase, projectId: string): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
-      where: and(eq(tasks.projectId, projectId), eq(tasks.deleted, false)),
-      orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
+    const rows = await db.query.tasksTable.findMany({
+      where: and(eq(tasksTable.projectId, projectId), eq(tasksTable.deleted, false)),
+      orderBy: (_tasks, { desc }) => [desc(tasksTable.createdAt)],
     });
     return rows.map(toDomain);
   }
 
   /**
    * Find all subtasks of a parent task.
-   * Excludes deleted tasks.
+   * Excludes deleted tasksTable.
    */
   async findSubtasks(db: StrideDatabase, parentTaskId: string): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
-      where: and(eq(tasks.parentTaskId, parentTaskId), eq(tasks.deleted, false)),
-      orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
+    const rows = await db.query.tasksTable.findMany({
+      where: and(eq(tasksTable.parentTaskId, parentTaskId), eq(tasksTable.deleted, false)),
+      orderBy: (_tasks, { asc }) => [asc(tasksTable.createdAt)],
     });
     return rows.map(toDomain);
   }
@@ -135,13 +135,13 @@ export class TaskRepository {
    * Find all top-level tasks (no parent) for a user.
    */
   async findRootTasks(db: StrideDatabase, userId: string): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
+    const rows = await db.query.tasksTable.findMany({
       where: and(
-        eq(tasks.userId, userId),
-        isNull(tasks.parentTaskId),
-        eq(tasks.deleted, false)
+        eq(tasksTable.userId, userId),
+        isNull(tasksTable.parentTaskId),
+        eq(tasksTable.deleted, false)
       ),
-      orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
+      orderBy: (_tasks, { desc }) => [desc(tasksTable.createdAt)],
     });
     return rows.map(toDomain);
   }
@@ -150,13 +150,13 @@ export class TaskRepository {
    * Find tasks planned for a specific date.
    */
   async findByPlannedDate(db: StrideDatabase, userId: string, date: string): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
+    const rows = await db.query.tasksTable.findMany({
       where: and(
-        eq(tasks.userId, userId),
-        eq(tasks.plannedForDate, date),
-        eq(tasks.deleted, false)
+        eq(tasksTable.userId, userId),
+        eq(tasksTable.plannedForDate, date),
+        eq(tasksTable.deleted, false)
       ),
-      orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
+      orderBy: (_tasks, { asc }) => [asc(tasksTable.createdAt)],
     });
     return rows.map(toDomain);
   }
@@ -165,13 +165,13 @@ export class TaskRepository {
    * Find tasks by status.
    */
   async findByStatus(db: StrideDatabase, userId: string, status: TaskStatus): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
+    const rows = await db.query.tasksTable.findMany({
       where: and(
-        eq(tasks.userId, userId),
-        eq(tasks.status, status),
-        eq(tasks.deleted, false)
+        eq(tasksTable.userId, userId),
+        eq(tasksTable.status, status),
+        eq(tasksTable.deleted, false)
       ),
-      orderBy: (tasks, { desc }) => [desc(tasks.updatedAt)],
+      orderBy: (_tasks, { desc }) => [desc(tasksTable.updatedAt)],
     });
     return rows.map(toDomain);
   }
@@ -180,20 +180,20 @@ export class TaskRepository {
    * Find completed tasks for a user.
    */
   async findCompleted(db: StrideDatabase, userId: string): Promise<Task[]> {
-    const rows = await db.query.tasks.findMany({
+    const rows = await db.query.tasksTable.findMany({
       where: and(
-        eq(tasks.userId, userId),
-        eq(tasks.status, 'COMPLETED'),
-        eq(tasks.deleted, false)
+        eq(tasksTable.userId, userId),
+        eq(tasksTable.status, 'COMPLETED'),
+        eq(tasksTable.deleted, false)
       ),
-      orderBy: (tasks, { desc }) => [desc(tasks.completedAt)],
+      orderBy: (_tasks, { desc }) => [desc(tasksTable.completedAt)],
     });
     return rows.map(toDomain);
   }
 
   /**
    * Find all subtasks of a parent task (alias for findSubtasks).
-   * Excludes deleted tasks.
+   * Excludes deleted tasksTable.
    */
   async findByParentId(db: StrideDatabase, parentTaskId: string): Promise<Task[]> {
     return this.findSubtasks(db, parentTaskId);
@@ -207,7 +207,7 @@ export class TaskRepository {
     const id = generateId();
     const dbTask = toDbInsert(task);
 
-    await db.insert(tasks).values({
+    await db.insert(tasksTable).values({
       id,
       ...dbTask,
     });
@@ -227,9 +227,9 @@ export class TaskRepository {
     const dbUpdates = toDbUpdate(updates);
 
     await db
-      .update(tasks)
+      .update(tasksTable)
       .set(dbUpdates)
-      .where(and(eq(tasks.id, id), eq(tasks.deleted, false)));
+      .where(and(eq(tasksTable.id, id), eq(tasksTable.deleted, false)));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -243,10 +243,7 @@ export class TaskRepository {
    * Sets deleted flag to true.
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
-    await db
-      .update(tasks)
-      .set({ deleted: true, updatedAt: now() })
-      .where(eq(tasks.id, id));
+    await db.update(tasksTable).set({ deleted: true, updatedAt: now() }).where(eq(tasksTable.id, id));
   }
 
   /**
@@ -255,8 +252,8 @@ export class TaskRepository {
   async count(db: StrideDatabase, userId: string): Promise<number> {
     const result = await db
       .select()
-      .from(tasks)
-      .where(and(eq(tasks.userId, userId), eq(tasks.deleted, false)));
+      .from(tasksTable)
+      .where(and(eq(tasksTable.userId, userId), eq(tasksTable.deleted, false)));
     return result.length;
   }
 
@@ -266,8 +263,8 @@ export class TaskRepository {
   async countByProject(db: StrideDatabase, projectId: string): Promise<number> {
     const result = await db
       .select()
-      .from(tasks)
-      .where(and(eq(tasks.projectId, projectId), eq(tasks.deleted, false)));
+      .from(tasksTable)
+      .where(and(eq(tasksTable.projectId, projectId), eq(tasksTable.deleted, false)));
     return result.length;
   }
 }

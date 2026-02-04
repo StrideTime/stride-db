@@ -7,7 +7,7 @@
 
 import { eq, and, gte, lte, desc, isNull } from 'drizzle-orm';
 import type { TimeEntry } from '@stridetime/types';
-import { timeEntries } from '../drizzle/schema';
+import { timeEntriesTable } from '../drizzle/schema';
 import type { TimeEntryRow, NewTimeEntryRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -52,8 +52,8 @@ export class TimeEntryRepository {
    * Find a time entry by ID.
    */
   async findById(db: StrideDatabase, id: string): Promise<TimeEntry | null> {
-    const row = await db.query.timeEntries.findFirst({
-      where: eq(timeEntries.id, id),
+    const row = await db.query.timeEntriesTable.findFirst({
+      where: eq(timeEntriesTable.id, id),
     });
     return row ? toDomain(row) : null;
   }
@@ -62,9 +62,9 @@ export class TimeEntryRepository {
    * Find all time entries for a task.
    */
   async findByTaskId(db: StrideDatabase, taskId: string): Promise<TimeEntry[]> {
-    const rows = await db.query.timeEntries.findMany({
-      where: eq(timeEntries.taskId, taskId),
-      orderBy: [desc(timeEntries.startedAt)],
+    const rows = await db.query.timeEntriesTable.findMany({
+      where: eq(timeEntriesTable.taskId, taskId),
+      orderBy: [desc(timeEntriesTable.startedAt)],
     });
     return rows.map(toDomain);
   }
@@ -73,9 +73,9 @@ export class TimeEntryRepository {
    * Find all time entries for a user.
    */
   async findByUserId(db: StrideDatabase, userId: string): Promise<TimeEntry[]> {
-    const rows = await db.query.timeEntries.findMany({
-      where: eq(timeEntries.userId, userId),
-      orderBy: [desc(timeEntries.startedAt)],
+    const rows = await db.query.timeEntriesTable.findMany({
+      where: eq(timeEntriesTable.userId, userId),
+      orderBy: [desc(timeEntriesTable.startedAt)],
     });
     return rows.map(toDomain);
   }
@@ -89,13 +89,13 @@ export class TimeEntryRepository {
     startDate: string,
     endDate: string
   ): Promise<TimeEntry[]> {
-    const rows = await db.query.timeEntries.findMany({
+    const rows = await db.query.timeEntriesTable.findMany({
       where: and(
-        eq(timeEntries.userId, userId),
-        gte(timeEntries.startedAt, startDate),
-        lte(timeEntries.startedAt, endDate)
+        eq(timeEntriesTable.userId, userId),
+        gte(timeEntriesTable.startedAt, startDate),
+        lte(timeEntriesTable.startedAt, endDate)
       ),
-      orderBy: [desc(timeEntries.startedAt)],
+      orderBy: [desc(timeEntriesTable.startedAt)],
     });
     return rows.map(toDomain);
   }
@@ -104,9 +104,9 @@ export class TimeEntryRepository {
    * Find active (ongoing) time entry for a user.
    */
   async findActive(db: StrideDatabase, userId: string): Promise<TimeEntry | null> {
-    const row = await db.query.timeEntries.findFirst({
-      where: and(eq(timeEntries.userId, userId), isNull(timeEntries.endedAt)),
-      orderBy: [desc(timeEntries.startedAt)],
+    const row = await db.query.timeEntriesTable.findFirst({
+      where: and(eq(timeEntriesTable.userId, userId), isNull(timeEntriesTable.endedAt)),
+      orderBy: [desc(timeEntriesTable.startedAt)],
     });
     return row ? toDomain(row) : null;
   }
@@ -118,7 +118,7 @@ export class TimeEntryRepository {
     const id = generateId();
     const dbEntry = toDbInsert(entry);
 
-    await db.insert(timeEntries).values({
+    await db.insert(timeEntriesTable).values({
       id,
       ...dbEntry,
     });
@@ -135,9 +135,9 @@ export class TimeEntryRepository {
    */
   async stop(db: StrideDatabase, id: string, endedAt: string): Promise<TimeEntry> {
     await db
-      .update(timeEntries)
+      .update(timeEntriesTable)
       .set({ endedAt })
-      .where(eq(timeEntries.id, id));
+      .where(eq(timeEntriesTable.id, id));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -150,7 +150,7 @@ export class TimeEntryRepository {
    * Delete a time entry.
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
-    await db.delete(timeEntries).where(eq(timeEntries.id, id));
+    await db.delete(timeEntriesTable).where(eq(timeEntriesTable.id, id));
   }
 
   /**

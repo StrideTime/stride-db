@@ -7,7 +7,7 @@
 
 import { eq, and } from 'drizzle-orm';
 import type { Workspace } from '@stridetime/types';
-import { workspaces } from '../drizzle/schema';
+import { workspacesTable } from '../drizzle/schema';
 import type { WorkspaceRow, NewWorkspaceRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -65,20 +65,20 @@ export class WorkspaceRepository {
    * Returns null if not found or deleted.
    */
   async findById(db: StrideDatabase, id: string): Promise<Workspace | null> {
-    const row = await db.query.workspaces.findFirst({
-      where: and(eq(workspaces.id, id), eq(workspaces.deleted, false)),
+    const row = await db.query.workspacesTable.findFirst({
+      where: and(eq(workspacesTable.id, id), eq(workspacesTable.deleted, false)),
     });
     return row ? toDomain(row) : null;
   }
 
   /**
    * Find all workspaces owned by a user.
-   * Excludes deleted workspaces.
+   * Excludes deleted workspacesTable.
    */
   async findByOwner(db: StrideDatabase, ownerUserId: string): Promise<Workspace[]> {
-    const rows = await db.query.workspaces.findMany({
-      where: and(eq(workspaces.ownerUserId, ownerUserId), eq(workspaces.deleted, false)),
-      orderBy: (workspaces, { desc }) => [desc(workspaces.createdAt)],
+    const rows = await db.query.workspacesTable.findMany({
+      where: and(eq(workspacesTable.ownerUserId, ownerUserId), eq(workspacesTable.deleted, false)),
+      orderBy: (_workspaces, { desc }) => [desc(workspacesTable.createdAt)],
     });
     return rows.map(toDomain);
   }
@@ -91,7 +91,7 @@ export class WorkspaceRepository {
     const id = generateId();
     const dbWorkspace = toDbInsert(workspace);
 
-    await db.insert(workspaces).values({
+    await db.insert(workspacesTable).values({
       id,
       ...dbWorkspace,
     });
@@ -111,9 +111,9 @@ export class WorkspaceRepository {
     const dbUpdates = toDbUpdate(updates);
 
     await db
-      .update(workspaces)
+      .update(workspacesTable)
       .set(dbUpdates)
-      .where(and(eq(workspaces.id, id), eq(workspaces.deleted, false)));
+      .where(and(eq(workspacesTable.id, id), eq(workspacesTable.deleted, false)));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -128,9 +128,9 @@ export class WorkspaceRepository {
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
     await db
-      .update(workspaces)
+      .update(workspacesTable)
       .set({ deleted: true, updatedAt: now() })
-      .where(eq(workspaces.id, id));
+      .where(eq(workspacesTable.id, id));
   }
 
   /**
@@ -139,8 +139,8 @@ export class WorkspaceRepository {
   async count(db: StrideDatabase, ownerUserId: string): Promise<number> {
     const result = await db
       .select()
-      .from(workspaces)
-      .where(and(eq(workspaces.ownerUserId, ownerUserId), eq(workspaces.deleted, false)));
+      .from(workspacesTable)
+      .where(and(eq(workspacesTable.ownerUserId, ownerUserId), eq(workspacesTable.deleted, false)));
     return result.length;
   }
 }

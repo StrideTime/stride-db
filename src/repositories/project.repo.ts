@@ -7,7 +7,7 @@
 
 import { eq, and } from 'drizzle-orm';
 import type { Project } from '@stridetime/types';
-import { projects } from '../drizzle/schema';
+import { projectsTable } from '../drizzle/schema';
 import type { ProjectRow, NewProjectRow } from '../drizzle/types';
 import type { StrideDatabase } from '../db/client';
 import { generateId, now } from '../db/utils';
@@ -71,32 +71,32 @@ export class ProjectRepository {
    * Returns null if not found or deleted.
    */
   async findById(db: StrideDatabase, id: string): Promise<Project | null> {
-    const row = await db.query.projects.findFirst({
-      where: and(eq(projects.id, id), eq(projects.deleted, false)),
+    const row = await db.query.projectsTable.findFirst({
+      where: and(eq(projectsTable.id, id), eq(projectsTable.deleted, false)),
     });
     return row ? toDomain(row) : null;
   }
 
   /**
    * Find all projects for a user.
-   * Excludes deleted projects.
+   * Excludes deleted projectsTable.
    */
   async findByUserId(db: StrideDatabase, userId: string): Promise<Project[]> {
-    const rows = await db.query.projects.findMany({
-      where: and(eq(projects.userId, userId), eq(projects.deleted, false)),
-      orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+    const rows = await db.query.projectsTable.findMany({
+      where: and(eq(projectsTable.userId, userId), eq(projectsTable.deleted, false)),
+      orderBy: (_projects, { desc }) => [desc(projectsTable.createdAt)],
     });
     return rows.map(toDomain);
   }
 
   /**
    * Find all projects in a workspace.
-   * Excludes deleted projects.
+   * Excludes deleted projectsTable.
    */
   async findByWorkspaceId(db: StrideDatabase, workspaceId: string): Promise<Project[]> {
-    const rows = await db.query.projects.findMany({
-      where: and(eq(projects.workspaceId, workspaceId), eq(projects.deleted, false)),
-      orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+    const rows = await db.query.projectsTable.findMany({
+      where: and(eq(projectsTable.workspaceId, workspaceId), eq(projectsTable.deleted, false)),
+      orderBy: (_projects, { desc }) => [desc(projectsTable.createdAt)],
     });
     return rows.map(toDomain);
   }
@@ -109,7 +109,7 @@ export class ProjectRepository {
     const id = generateId();
     const dbProject = toDbInsert(project);
 
-    await db.insert(projects).values({
+    await db.insert(projectsTable).values({
       id,
       ...dbProject,
     });
@@ -129,9 +129,9 @@ export class ProjectRepository {
     const dbUpdates = toDbUpdate(updates);
 
     await db
-      .update(projects)
+      .update(projectsTable)
       .set(dbUpdates)
-      .where(and(eq(projects.id, id), eq(projects.deleted, false)));
+      .where(and(eq(projectsTable.id, id), eq(projectsTable.deleted, false)));
 
     const updated = await this.findById(db, id);
     if (!updated) {
@@ -146,9 +146,9 @@ export class ProjectRepository {
    */
   async delete(db: StrideDatabase, id: string): Promise<void> {
     await db
-      .update(projects)
+      .update(projectsTable)
       .set({ deleted: true, updatedAt: now() })
-      .where(eq(projects.id, id));
+      .where(eq(projectsTable.id, id));
   }
 
   /**
@@ -157,8 +157,8 @@ export class ProjectRepository {
   async count(db: StrideDatabase, userId: string): Promise<number> {
     const result = await db
       .select()
-      .from(projects)
-      .where(and(eq(projects.userId, userId), eq(projects.deleted, false)));
+      .from(projectsTable)
+      .where(and(eq(projectsTable.userId, userId), eq(projectsTable.deleted, false)));
     return result.length;
   }
 
@@ -168,8 +168,8 @@ export class ProjectRepository {
   async countByWorkspace(db: StrideDatabase, workspaceId: string): Promise<number> {
     const result = await db
       .select()
-      .from(projects)
-      .where(and(eq(projects.workspaceId, workspaceId), eq(projects.deleted, false)));
+      .from(projectsTable)
+      .where(and(eq(projectsTable.workspaceId, workspaceId), eq(projectsTable.deleted, false)));
     return result.length;
   }
 }
