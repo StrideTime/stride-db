@@ -1,5 +1,29 @@
 # @stridetime/db
 
+## 0.1.12
+
+### Patch Changes
+
+- bumped to latest version of types package
+
+## 0.1.10
+
+### Patch Changes
+
+- updated types version to support new Auth setup
+
+## 0.1.8
+
+### Patch Changes
+
+- added logs to supabase provider
+
+## 0.1.6
+
+### Patch Changes
+
+- added functionality for password reset
+
 ## 0.1.4
 
 ### Patch Changes
