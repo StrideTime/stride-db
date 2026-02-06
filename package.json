@@ -1,6 +1,6 @@
 {
   "name": "@stridetime/db",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "description": "Database layer for Stride - Drizzle ORM with local-first SQLite and PowerSync cloud sync",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -45,7 +45,7 @@
     "@powersync/common": "^1.46.0",
     "@powersync/drizzle-driver": "^0.7.2",
     "@powersync/web": "^1.32.0",
-    "@stridetime/types": "^0.1.2",
+    "@stridetime/types": "^0.1.19",
     "@supabase/supabase-js": "^2.39.0",
     "drizzle-orm": "^0.38.0"
   },
